@@ -7,20 +7,24 @@ from keras import utils
 from keras.preprocessing import image
 from keras.preprocessing import image_dataset_from_directory
 import matplotlib.pyplot as plt
+from random import random, randint
 
 data_dir = 'G:\\dataset'
-width = 90
-height = 120
+width = 180
+height = 240
 image_size = (width, height)
 batch_size = 64
-epoch = 10
+epoch = 25
 train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
     rescale=1. / 255,  # Масштабирование значений пикселей в диапазон [0, 1]
     rotation_range=20,  # Случайный поворот изображения на угол в диапазоне [-20, 20]
     width_shift_range=0.2,  # Случайный сдвиг изображения по горизонтали на долю от ширины изображения
     height_shift_range=0.2,  # Случайный сдвиг изображения по вертикали на долю от высоты изображения
     horizontal_flip=True,  # Случайное отражение изображения по горизонтали
-    validation_split=0.2  # Доля изображений для валидации
+    validation_split=0.2,  # Доля изображений для валидации
+    zoom_range=0.2,
+    shear_range=0.2,
+    brightness_range=[0.7, 1.3]
 )
 
 # train_dataset = image_dataset_from_directory(data_dir,
@@ -98,7 +102,7 @@ model.add(Dense(9, activation='softmax'))
 model.compile(loss='categorical_crossentropy',
               optimizer="adam",
               metrics=['accuracy'])
-
+model.summary()
 history = model.fit(train_generator,
                     validation_data=validation_generator,
                     epochs=epoch,
@@ -111,9 +115,9 @@ plt.plot(history.history['val_accuracy'],
 plt.plot(history.history['loss'],
          label='Доля loss')
 plt.axhline(y=1, color='red', linestyle='--', alpha=0.7)
-
 plt.xlabel('Эпоха обучения')
 plt.ylabel('Доля верных ответов')
 plt.legend()
 plt.show()
-model.save("G:\\clothes_9_class_epoc_" + str(epoch) + "_size_" + str(width) + "x" + str(height) + ".keras")
+model.save("G:\\clothes_9_class_epoc_" + str(epoch) + "_size_" + str(width) + "x" + str(height) + "_" + str(
+    randint(1, 1000)) + ".keras")
