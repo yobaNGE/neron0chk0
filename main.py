@@ -7,12 +7,15 @@ from keras import utils
 from keras.preprocessing import image
 from keras.preprocessing import image_dataset_from_directory
 import matplotlib.pyplot as plt
-data_dir = 'G:\\dataset'
-image_size = (90, 120)
-batch_size = 32
 
+data_dir = 'G:\\dataset'
+width = 90
+height = 120
+image_size = (width, height)
+batch_size = 64
+epoch = 10
 train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
-    rescale=1./ 255,# Масштабирование значений пикселей в диапазон [0, 1]
+    rescale=1. / 255,  # Масштабирование значений пикселей в диапазон [0, 1]
     rotation_range=20,  # Случайный поворот изображения на угол в диапазоне [-20, 20]
     width_shift_range=0.2,  # Случайный сдвиг изображения по горизонтали на долю от ширины изображения
     height_shift_range=0.2,  # Случайный сдвиг изображения по вертикали на долю от высоты изображения
@@ -58,7 +61,6 @@ test_dataset = image_dataset_from_directory(data_dir,
                                             batch_size=batch_size,
                                             image_size=image_size)
 
-
 # AUTOTUNE = tf.data.experimental.AUTOTUNE
 #
 # train_dataset = train_dataset.prefetch(buffer_size=AUTOTUNE)
@@ -69,7 +71,7 @@ test_dataset = image_dataset_from_directory(data_dir,
 model = Sequential()
 # Сверточный слой
 model.add(Conv2D(16, (5, 5), padding='same',
-                 input_shape=(90, 120, 3), activation='relu'))
+                 input_shape=(width, height, 3), activation='relu'))
 # Слой подвыборки
 model.add(MaxPooling2D(pool_size=(2, 2)))
 # Сверточный слой
@@ -99,15 +101,19 @@ model.compile(loss='categorical_crossentropy',
 
 history = model.fit(train_generator,
                     validation_data=validation_generator,
-                    epochs=20,
+                    epochs=epoch,
                     verbose=1)
 
 plt.plot(history.history['accuracy'],
          label='Доля верных ответов на обучающем наборе')
 plt.plot(history.history['val_accuracy'],
          label='Доля верных ответов на проверочном наборе')
+plt.plot(history.history['loss'],
+         label='Доля loss')
+plt.axhline(y=1, color='red', linestyle='--', alpha=0.7)
+
 plt.xlabel('Эпоха обучения')
 plt.ylabel('Доля верных ответов')
 plt.legend()
 plt.show()
-model.save("G:\\clothes_9_class_model.keras")
+model.save("G:\\clothes_9_class_epoc_" + str(epoch) + "_size_" + str(width) + "x" + str(height) + ".keras")
