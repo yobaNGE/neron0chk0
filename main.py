@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from random import random, randint
 from keras import layers
 
-data_dir = 'G:\\dataset'
+data_dir = 'dataset'
 width = 180
 height = 240
 image_size = (width, height)
